@@ -12,6 +12,12 @@ entries:
     - output: web,pdf
       title: ensembl
       url: ensembl.html
+    - output: web,pdf
+      title: tile
+      url: tile.html
+    - output: web,pdf
+      title: Design
+      url: design.html
     output: web
     title: sgrna_designer
   output: web

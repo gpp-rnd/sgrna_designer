@@ -72,7 +72,7 @@ def get_ensembl_id_information(ensembl_id, expand=1, utr=1, **kwargs):
     return transcript_info
 
 # Cell
-def get_transcript_sequence(ensembl_id, seq_type='cdna', mask_feature='1',
+def get_transcript_sequence(ensembl_id, seq_type='cds',
                             **kwargs):
     """Request multiple types of sequence by stable identifier. Supports feature masking and expand options.
     Uses https://rest.ensembl.org/documentation/info/sequence_id
@@ -84,7 +84,7 @@ def get_transcript_sequence(ensembl_id, seq_type='cdna', mask_feature='1',
     returns: str, sequence 3' to 5' in the same orientation as the input transcript
     """
     headers = {'content-type': 'text/plain'}
-    params = {'type': seq_type, 'mask_feature': mask_feature, **kwargs}
+    params = {'type': seq_type, **kwargs}
     r = ensembl_get("/sequence/id/", query=ensembl_id, params=params,
                     headers=headers)
     seq = r.text

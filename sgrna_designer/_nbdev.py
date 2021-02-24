@@ -9,9 +9,23 @@ index = {"ensembl_get": "00_ensembl.ipynb",
          "post_transcript_sequence": "00_ensembl.ipynb",
          "create_region_str": "00_ensembl.ipynb",
          "get_region_sequence": "00_ensembl.ipynb",
-         "post_region_sequences": "00_ensembl.ipynb"}
+         "post_region_sequences": "00_ensembl.ipynb",
+         "get_sequence_kmers": "01_tile.ipynb",
+         "extract_subsequences": "01_tile.ipynb",
+         "build_sgrna_df": "01_tile.ipynb",
+         "reverse_compliment": "02_design.ipynb",
+         "calculate_global_position": "02_design.ipynb",
+         "traverse_global_position": "02_design.ipynb",
+         "get_sgrna_global_indices": "02_design.ipynb",
+         "get_trainscript_region_info": "02_design.ipynb",
+         "get_target_regions_df": "02_design.ipynb",
+         "get_target_regions_sequences": "02_design.ipynb",
+         "filter_sgrnas_by_region": "02_design.ipynb",
+         "design_sgrna_tiling_library": "02_design.ipynb"}
 
-modules = ["ensembl.py"]
+modules = ["ensembl.py",
+           "tile.py",
+           "design.py"]
 
 doc_url = "https://gpp-rnd.github.io/sgrna_designer/"
 
