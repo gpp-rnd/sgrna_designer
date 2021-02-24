@@ -56,10 +56,10 @@ def ensembl_post(ext, data, headers=None, params=None):
 def get_ensembl_id_information(ensembl_id, expand=1, utr=1, **kwargs):
     """Get information for an ensembl id (ref. https://rest.ensembl.org/documentation/info/lookup)
 
-    ensembl_id: ENSG or ENST
+    ensembl_id: ENSG or ENST |
     expand: Expands the search to include any connected features.
-        e.g. If the object is a gene, its transcripts, translations and exons will be returned as well.
-    utr: Include 5' and 3' UTR features. Only available if the expand option is used.
+        e.g. If the object is a gene, its transcripts, translations and exons will be returned as well. |
+    utr: Include 5' and 3' UTR features. Only available if the expand option is used. |
     kwargs: other parameters for lookup |
 
     returns: dict
@@ -78,10 +78,9 @@ def get_transcript_sequence(ensembl_id, seq_type='cds',
     Uses https://rest.ensembl.org/documentation/info/sequence_id
 
     seq_type: str, one of [genomic, cds, cdna, protein] |
-    mask_feature: str, If sequence is genomic, mask introns. If sequence is cDNA, mask UTRs. |
     kwargs: additional parameter arguments |
 
-    returns: str, sequence 3' to 5' in the same orientation as the input transcript
+    returns: str, sequence 5' to 3' in the same orientation as the input transcript
     """
     headers = {'content-type': 'text/plain'}
     params = {'type': seq_type, **kwargs}
@@ -91,19 +90,18 @@ def get_transcript_sequence(ensembl_id, seq_type='cds',
     return seq
 
 # Cell
-def post_transcript_sequence(ensembl_ids, seq_type='cdna', mask_feature='1',
+def post_transcript_sequence(ensembl_ids, seq_type='cdna',
                             **kwargs):
     """Request multiple types of sequence by stable identifier. Supports feature masking and expand options.
     Uses https://rest.ensembl.org/documentation/info/sequence_id
 
     seq_type: str, one of [genomic, cds, cdna, protein] |
-    mask_feature: str, If sequence is genomic, mask introns. If sequence is cDNA, mask UTRs. |
     kwargs: additional parameter arguments |
 
-    returns: str, sequence 3' to 5' in the same orientation as the input transcript
+    returns: str, sequence 5' to 3' in the same orientation as the input transcript
     """
     headers={"content-type" : "application/json", "accept" : "application/json"}
-    params = {'type': seq_type, 'mask_feature': mask_feature, **kwargs}
+    params = {'type': seq_type, **kwargs}
     data = {'ids': ensembl_ids}
     r = ensembl_post("/sequence/id/", data=data, params=params,
                      headers=headers)
@@ -112,6 +110,14 @@ def post_transcript_sequence(ensembl_ids, seq_type='cdna', mask_feature='1',
 
 # Cell
 def create_region_str(start, end, seq_region):
+    """Generate string to query a geonomic region of interest
+
+    start: int |
+    end: int |
+    seq_region: str, chromosome |
+
+    returns: str
+    """
     region = seq_region + ':' + str(start) + '..' + str(end)
     return region
 
@@ -141,9 +147,9 @@ def post_region_sequences(start, end, seq_region, **kwargs):
     """Request multiple types of sequence by a list of regions.
     Uses https://rest.ensembl.org/documentation/info/sequence_region_post
 
-    start: list, start of each query region. Should align with end and seq_region |
-    end: list |
-    seq_region: list |
+    start: list of int, start of each query region. Should align with end and seq_region |
+    end: list of int |
+    seq_region: list of str |
     kwargs: optional params for the query |
 
     returns: list of dict

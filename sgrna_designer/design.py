@@ -13,7 +13,7 @@ from sgrna_designer import tile
 def reverse_compliment(seq):
     """Return the reverse compliment of a sequence
 
-    seq: str
+    seq: str |
 
     return: str
     """
@@ -26,10 +26,12 @@ def reverse_compliment(seq):
 def calculate_global_position(strand, start, end, relative_position):
     """Calculate the global position of locus in a subsequence
 
-    strand: int [1 or -1], strand of DNA sequence
-    start: int, global start position of sequence
-    end: int, global end position of sequence
-    relative_position: list, positions of sgRNAs relative to sequence
+    strand: int [1 or -1], strand of DNA sequence |
+    start: int, global start position of sequence |
+    end: int, global end position of sequence |
+    relative_position: list of int, positions of sgRNAs relative to sequence |
+
+    returns: list of int
     """
     if strand == 1:
         global_position = [start + x for x in relative_position]
@@ -41,7 +43,14 @@ def calculate_global_position(strand, start, end, relative_position):
 
 # Cell
 def traverse_global_position(strand, reference_position, distance):
-    """Move from one global position to another"""
+    """Move from one global position to another
+
+    strand: int [1 or -1], strand of DNA sequence |
+    reference_position: list of int, global starting position |
+    distance: int, distance to move 5' to 3' on either strand |
+
+    returns: list of int
+    """
     if strand == 1:
         new_position = [x + distance for x in reference_position]
     elif strand == -1:
@@ -52,11 +61,15 @@ def traverse_global_position(strand, reference_position, distance):
 
 # Cell
 def get_sgrna_global_indices(sgrna_df, seq_start, seq_end, strand, sg_positions=None):
-    """Take a sgrna_df and return the globabl positions of elements of the sgRNA
-    sgrna_df: Dataframe from `build_sgrna_df`
-    seq_start: int, starting index of sequence
-    seq_end: int, ending index of sequence
-    sg_positions: list, positions witih sgRNA to annotate (e.g. [4,8] for nucleotides 4 and 8 of the sgRNA)
+    """Take an sgrna_df and return the globabl positions of elements of the sgRNA
+
+    sgrna_df: Dataframe from `build_sgrna_df` |
+    seq_start: int, starting index of sequence |
+    seq_end: int, ending index of sequence |
+    strand: int [1 or -1], strand of DNA sequence |
+    sg_positions: list, positions within the sgRNA to annotate (e.g. [4,8] for nucleotides 4 and 8 of the sgRNA) |
+
+    returns: DataFrame
     """
     indexed_sgrna_df = sgrna_df.copy()
     indexed_sgrna_df['sgrna_global_start'] = calculate_global_position(strand, seq_start, seq_end,
@@ -73,9 +86,11 @@ def get_sgrna_global_indices(sgrna_df, seq_start, seq_end, strand, sg_positions=
 def get_trainscript_region_info(transcript_info, region_parent, region):
     """Return dictionaries for specified regions of interest
 
-    transcript_info: dict, returned by https://rest.ensembl.org/documentation/info/lookup
-    region_parent: str, first level key in transcript_info eg. UTR
-    region: str, second level key in trancript_info eg. three_prime_UTR
+    transcript_info: dict, returned by https://rest.ensembl.org/documentation/info/lookup |
+    region_parent: str, first level key in transcript_info eg. UTR |
+    region: str, second level key in trancript_info eg. three_prime_UTR |
+
+    returns: list of dict
     """
     if region_parent in transcript_info.keys():
         parent_info = transcript_info[region_parent]
@@ -89,6 +104,16 @@ def get_trainscript_region_info(transcript_info, region_parent, region):
 
 def get_target_regions_df(target_transcripts, region_parent, region,
                           expand_3prime, expand_5prime):
+    """For a list of transcripts return the locations for a specific region (e.g. three_prime_UTR)
+
+    target_transcripts: list of str
+    region_parent: str, first level key in transcript_info eg. UTR |
+    region: str, second level key in trancript_info eg. three_prime_UTR |
+    expand_3prime: int, length to expand region in 3' direction |
+    expand_5prime: int, length to expand region in 5' direction |
+
+    returns: DataFrame of target regions
+    """
     target_transcript_info = []
     for transcript in target_transcripts:
         transcript_info = ensembl.get_ensembl_id_information(transcript)
@@ -99,7 +124,7 @@ def get_target_regions_df(target_transcripts, region_parent, region,
     target_regions_df = pd.concat(target_transcript_info)
     target_regions_df['expanded_start'] = target_regions_df['start'] - expand_3prime
     target_regions_df['expanded_end'] = target_regions_df['end'] + expand_5prime
-    # We'll need to keep track of region_pos for merging with the target_sequence_df
+    # We keep track of region_pos for merging with the target_sequence_df
     target_regions_df['region_pos'] = target_regions_df.apply(lambda row:
                                                               ensembl.create_region_str(row['expanded_start'],
                                                                                         row['expanded_end'],
@@ -109,6 +134,12 @@ def get_target_regions_df(target_transcripts, region_parent, region,
 
 # Cell
 def get_target_regions_sequences(target_regions_df):
+    """Get sequences from a DataFrame of target regions
+
+    target_regions_df: DataFrame from `get_target_regions_df`
+
+    returns: DataFrame
+    """
     target_sequences = ensembl.post_region_sequences(target_regions_df['expanded_start'],
                                                      target_regions_df['expanded_end'],
                                                      target_regions_df['seq_region_name'])
@@ -117,7 +148,13 @@ def get_target_regions_sequences(target_regions_df):
 
 # Cell
 def filter_sgrnas_by_region(transcript_sgrna_df, sg_positions):
-    """Filter for sgRNAs such that the sgRNA positions of interest are within the transcript region of interest
+    """Filter for sgRNAs such that the specified sgRNA positions are within the region of interest
+
+    transcript_sgrna_df: DataFrame, from`get_transcript_sgrnas`
+    sg_positions: list of int, positions within the sgRNA to annotate
+    (e.g. [4,8] for nucleotides 4 and 8 of the sgRNA) |
+
+    returns: DataFrame, filtered for sgRNAs that fall within the target region
     """
     global_pos_cols = []
     for pos in sg_positions:
@@ -135,6 +172,24 @@ def design_sgrna_tiling_library(target_transcripts, region_parent, region,
                                 expand_3prime, expand_5prime, context_len,
                                 pam_start, pam_len, sgrna_start, sgrna_len,
                                 pams, sg_positions):
+    """Design sgRNAs tiling transcript regions
+
+    target_transcripts: list of str
+    region_parent: str, first level key in transcript_info eg. UTR |
+    region: str, second level key in trancript_info eg. three_prime_UTR |
+    expand_3prime: int, length to expand region in 3' direction |
+    expand_5prime: int, length to expand region in 5' direction |
+    context_len: int, length of context sequence |
+    pam_start: int, position of PAM start relative to the context sequence |
+    pam_len: int, length of PAM |
+    sgrna_start: int, position of sgRNA relative to context sequence |
+    sgrna_len: length of sgRNA sequence |
+    pams: list or None, PAMs to design against |
+    sg_positions: list of int, positions within the sgRNA to annotate
+    (e.g. [4,8] for nucleotides 4 and 8 of the sgRNA) |
+
+    returns: DataFrame, sgRNAs for transcript regions of interest
+    """
     target_regions_df = get_target_regions_df(target_transcripts=target_transcripts, region_parent=region_parent,
                                               region=region, expand_3prime=expand_3prime,
                                               expand_5prime=expand_5prime)

@@ -9,8 +9,8 @@ import pandas as pd
 def get_sequence_kmers(sequence, k):
     """Get all subsequences of length k. Include overlapping sequences
 
-    sequence: str
-    k: int
+    sequence: str |
+    k: int |
 
     returns: list of str
     """
@@ -22,9 +22,9 @@ def get_sequence_kmers(sequence, k):
 def extract_subsequences(sequences, subseq_len, subseq_start):
     """Given a list of sequences extract a subsequence from each one
 
-    sequences: list
-    pam_len: int, length of pam being considered
-    pam_start: int, starting position for the pam sequence (-6 for Cas9)
+    sequences: list |
+    pam_len: int, length of pam being considered |
+    pam_start: int, starting position for the pam sequence (-6 for Cas9) |
 
     returns: list
     """
@@ -36,13 +36,15 @@ def build_sgrna_df(sequence, context_len, pam_start, pam_len,
                    sgrna_start, sgrna_len, pams=None):
     """Given a sequence, build a dataframe with all possible sgRNAs
 
-    sequence: str, sequence to designs sgRNAs against
-    context_len: int, length of context sequence
-    pam_start: int, position of PAM start relative to the context sequence
-    pam_len: int, length of PAM
-    sgrna_start: int, position of sgRNA relative to context sequence
-    sgrna_len: length of sgRNA sequence
-    pams: list or None, PAMs to design against
+    sequence: str, sequence to designs sgRNAs against |
+    context_len: int, length of context sequence |
+    pam_start: int, position of PAM start relative to the context sequence |
+    pam_len: int, length of PAM |
+    sgrna_start: int, position of sgRNA relative to context sequence |
+    sgrna_len: length of sgRNA sequence |
+    pams: list or None, PAMs to design against |
+
+    returns: DataFrame
     """
     subsequences = get_sequence_kmers(sequence, context_len)
     sgrna_df = pd.DataFrame({'context_sequence': subsequences,

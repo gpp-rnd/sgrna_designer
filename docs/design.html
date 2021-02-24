@@ -50,7 +50,7 @@ nb_path: "02_design.ipynb"
 <h4 id="reverse_compliment" class="doc_header"><code>reverse_compliment</code><a href="https://github.com/gpp-rnd/sgrna_designer/tree/master/sgrna_designer/design.py#L13" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>reverse_compliment</code>(<strong><code>seq</code></strong>)</p>
 </blockquote>
 <p>Return the reverse compliment of a sequence</p>
-<p>seq: str</p>
+<p>seq: str |</p>
 <p>return: str</p>
 
 </div>
@@ -89,7 +89,8 @@ nb_path: "02_design.ipynb"
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Global-indexing">Global indexing<a class="anchor-link" href="#Global-indexing"> </a></h2><p>We have some functions to keep track of position, keeping the DNA strand of an sgRNA into account.</p>
+<h2 id="Global-indexing">Global indexing<a class="anchor-link" href="#Global-indexing"> </a></h2><p>Given the global start and end of a sequence (location with the genome) and its orientation, track the
+the global position of targetting sgRNAs.</p>
 
 </div>
 </div>
@@ -108,10 +109,11 @@ nb_path: "02_design.ipynb"
 <h4 id="calculate_global_position" class="doc_header"><code>calculate_global_position</code><a href="https://github.com/gpp-rnd/sgrna_designer/tree/master/sgrna_designer/design.py#L26" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>calculate_global_position</code>(<strong><code>strand</code></strong>, <strong><code>start</code></strong>, <strong><code>end</code></strong>, <strong><code>relative_position</code></strong>)</p>
 </blockquote>
 <p>Calculate the global position of locus in a subsequence</p>
-<p>strand: int [1 or -1], strand of DNA sequence
-start: int, global start position of sequence
-end: int, global end position of sequence
-relative_position: list, positions of sgRNAs relative to sequence</p>
+<p>strand: int [1 or -1], strand of DNA sequence |
+start: int, global start position of sequence |
+end: int, global end position of sequence |
+relative_position: list of int, positions of sgRNAs relative to sequence |</p>
+<p>returns: list of int</p>
 
 </div>
 
@@ -157,7 +159,7 @@ relative_position: list, positions of sgRNAs relative to sequence</p>
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>We'll test the global positioning on the reverse compliment sequence as well</p>
+<p>Note that the direction is reversed for a sequence on the negative DNA strand</p>
 
 </div>
 </div>
@@ -197,9 +199,13 @@ relative_position: list, positions of sgRNAs relative to sequence</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="traverse_global_position" class="doc_header"><code>traverse_global_position</code><a href="https://github.com/gpp-rnd/sgrna_designer/tree/master/sgrna_designer/design.py#L43" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>traverse_global_position</code>(<strong><code>strand</code></strong>, <strong><code>reference_position</code></strong>, <strong><code>distance</code></strong>)</p>
+<h4 id="traverse_global_position" class="doc_header"><code>traverse_global_position</code><a href="https://github.com/gpp-rnd/sgrna_designer/tree/master/sgrna_designer/design.py#L45" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>traverse_global_position</code>(<strong><code>strand</code></strong>, <strong><code>reference_position</code></strong>, <strong><code>distance</code></strong>)</p>
 </blockquote>
 <p>Move from one global position to another</p>
+<p>strand: int [1 or -1], strand of DNA sequence |
+reference_position: list of int, global starting position |
+distance: int, distance to move 5' to 3' on either strand |</p>
+<p>returns: list of int</p>
 
 </div>
 
@@ -228,10 +234,9 @@ relative_position: list, positions of sgRNAs relative to sequence</p>
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">sgrna_positions</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">]</span>
 <span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">sgrna_positions</span><span class="p">:</span>
     <span class="n">sgrna_df</span><span class="p">[</span><span class="s1">&#39;sgrna_global_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">pos</span><span class="p">)]</span> <span class="o">=</span> <span class="n">traverse_global_position</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">sgrna_df</span><span class="p">[</span><span class="s1">&#39;sgrna_global_start&#39;</span><span class="p">],</span> <span class="n">pos</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-<span class="k">assert</span> <span class="n">sgrna_df</span><span class="p">[</span><span class="s1">&#39;sgrna_sequence&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">:</span><span class="mi">8</span><span class="p">]</span> <span class="o">==</span> <span class="n">ensembl</span><span class="o">.</span><span class="n">get_region_sequence</span><span class="p">(</span>
-    <span class="n">sgrna_df</span><span class="p">[</span><span class="s1">&#39;sgrna_global_4&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
-    <span class="n">sgrna_df</span><span class="p">[</span><span class="s1">&#39;sgrna_global_8&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
-    <span class="n">chrom</span><span class="p">)</span>
+<span class="k">assert</span> <span class="p">(</span><span class="n">sgrna_df</span><span class="p">[</span><span class="s1">&#39;sgrna_sequence&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">:</span><span class="mi">8</span><span class="p">]</span> <span class="o">==</span> <span class="n">ensembl</span><span class="o">.</span><span class="n">get_region_sequence</span><span class="p">(</span><span class="n">sgrna_df</span><span class="p">[</span><span class="s1">&#39;sgrna_global_4&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                                                                          <span class="n">sgrna_df</span><span class="p">[</span><span class="s1">&#39;sgrna_global_8&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                                                                          <span class="n">chrom</span><span class="p">))</span>
 </pre></div>
 
     </div>
@@ -243,7 +248,7 @@ relative_position: list, positions of sgRNAs relative to sequence</p>
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>We'll test the reverse compliment sequence as well</p>
+<p>Again the direction is reversed for a sequence on the negative DNA strand</p>
 
 </div>
 </div>
@@ -281,13 +286,15 @@ relative_position: list, positions of sgRNAs relative to sequence</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="get_sgrna_global_indices" class="doc_header"><code>get_sgrna_global_indices</code><a href="https://github.com/gpp-rnd/sgrna_designer/tree/master/sgrna_designer/design.py#L54" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>get_sgrna_global_indices</code>(<strong><code>sgrna_df</code></strong>, <strong><code>seq_start</code></strong>, <strong><code>seq_end</code></strong>, <strong><code>strand</code></strong>, <strong><code>sg_positions</code></strong>=<em><code>None</code></em>)</p>
+<h4 id="get_sgrna_global_indices" class="doc_header"><code>get_sgrna_global_indices</code><a href="https://github.com/gpp-rnd/sgrna_designer/tree/master/sgrna_designer/design.py#L63" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>get_sgrna_global_indices</code>(<strong><code>sgrna_df</code></strong>, <strong><code>seq_start</code></strong>, <strong><code>seq_end</code></strong>, <strong><code>strand</code></strong>, <strong><code>sg_positions</code></strong>=<em><code>None</code></em>)</p>
 </blockquote>
-<p>Take a sgrna_df and return the globabl positions of elements of the sgRNA
-sgrna_df: Dataframe from <a href="/sgrna_designer/tile.html#build_sgrna_df"><code>build_sgrna_df</code></a>
-seq_start: int, starting index of sequence
-seq_end: int, ending index of sequence
-sg_positions: list, positions witih sgRNA to annotate (e.g. [4,8] for nucleotides 4 and 8 of the sgRNA)</p>
+<p>Take an sgrna_df and return the globabl positions of elements of the sgRNA</p>
+<p>sgrna_df: Dataframe from <a href="/sgrna_designer/tile.html#build_sgrna_df"><code>build_sgrna_df</code></a> |
+seq_start: int, starting index of sequence |
+seq_end: int, ending index of sequence |
+strand: int [1 or -1], strand of DNA sequence |
+sg_positions: list, positions within the sgRNA to annotate (e.g. [4,8] for nucleotides 4 and 8 of the sgRNA) |</p>
+<p>returns: DataFrame</p>
 
 </div>
 
@@ -323,12 +330,13 @@ sg_positions: list, positions witih sgRNA to annotate (e.g. [4,8] for nucleotide
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="get_trainscript_region_info" class="doc_header"><code>get_trainscript_region_info</code><a href="https://github.com/gpp-rnd/sgrna_designer/tree/master/sgrna_designer/design.py#L73" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>get_trainscript_region_info</code>(<strong><code>transcript_info</code></strong>, <strong><code>region_parent</code></strong>, <strong><code>region</code></strong>)</p>
+<h4 id="get_trainscript_region_info" class="doc_header"><code>get_trainscript_region_info</code><a href="https://github.com/gpp-rnd/sgrna_designer/tree/master/sgrna_designer/design.py#L86" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>get_trainscript_region_info</code>(<strong><code>transcript_info</code></strong>, <strong><code>region_parent</code></strong>, <strong><code>region</code></strong>)</p>
 </blockquote>
 <p>Return dictionaries for specified regions of interest</p>
-<p>transcript_info: dict, returned by <a href="https://rest.ensembl.org/documentation/info/lookup">https://rest.ensembl.org/documentation/info/lookup</a>
-region_parent: str, first level key in transcript_info eg. UTR
-region: str, second level key in trancript_info eg. three_prime_UTR</p>
+<p>transcript_info: dict, returned by <a href="https://rest.ensembl.org/documentation/info/lookup">https://rest.ensembl.org/documentation/info/lookup</a> |
+region_parent: str, first level key in transcript_info eg. UTR |
+region: str, second level key in trancript_info eg. three_prime_UTR |</p>
+<p>returns: list of dict</p>
 
 </div>
 
@@ -351,8 +359,15 @@ region: str, second level key in trancript_info eg. three_prime_UTR</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="get_target_regions_df" class="doc_header"><code>get_target_regions_df</code><a href="https://github.com/gpp-rnd/sgrna_designer/tree/master/sgrna_designer/design.py#L90" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>get_target_regions_df</code>(<strong><code>target_transcripts</code></strong>, <strong><code>region_parent</code></strong>, <strong><code>region</code></strong>, <strong><code>expand_3prime</code></strong>, <strong><code>expand_5prime</code></strong>)</p>
+<h4 id="get_target_regions_df" class="doc_header"><code>get_target_regions_df</code><a href="https://github.com/gpp-rnd/sgrna_designer/tree/master/sgrna_designer/design.py#L105" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>get_target_regions_df</code>(<strong><code>target_transcripts</code></strong>, <strong><code>region_parent</code></strong>, <strong><code>region</code></strong>, <strong><code>expand_3prime</code></strong>, <strong><code>expand_5prime</code></strong>)</p>
 </blockquote>
+<p>For a list of transcripts return the locations for a specific region (e.g. three_prime_UTR)</p>
+<p>target_transcripts: list of str
+region_parent: str, first level key in transcript_info eg. UTR |
+region: str, second level key in trancript_info eg. three_prime_UTR |
+expand_3prime: int, length to expand region in 3' direction |
+expand_5prime: int, length to expand region in 5' direction |</p>
+<p>returns: DataFrame of target regions</p>
 
 </div>
 
@@ -402,8 +417,11 @@ region: str, second level key in trancript_info eg. three_prime_UTR</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="get_target_regions_sequences" class="doc_header"><code>get_target_regions_sequences</code><a href="https://github.com/gpp-rnd/sgrna_designer/tree/master/sgrna_designer/design.py#L111" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>get_target_regions_sequences</code>(<strong><code>target_regions_df</code></strong>)</p>
+<h4 id="get_target_regions_sequences" class="doc_header"><code>get_target_regions_sequences</code><a href="https://github.com/gpp-rnd/sgrna_designer/tree/master/sgrna_designer/design.py#L136" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>get_target_regions_sequences</code>(<strong><code>target_regions_df</code></strong>)</p>
 </blockquote>
+<p>Get sequences from a DataFrame of target regions</p>
+<p>target_regions_df: DataFrame from <a href="/sgrna_designer/design.html#get_target_regions_df"><code>get_target_regions_df</code></a></p>
+<p>returns: DataFrame</p>
 
 </div>
 
@@ -448,6 +466,13 @@ region: str, second level key in trancript_info eg. three_prime_UTR</p>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">merge_target_region_sequence_df</span><span class="p">(</span><span class="n">target_regions_df</span><span class="p">,</span> <span class="n">target_sequences_df</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Merge target regions and target sequences dataframes</span>
+
+<span class="sd">    target_regions_df:  DataFrame, from `get_target_regions_df` |</span>
+<span class="sd">    target_sequences_df: DataFrame, from `get_target_regions_sequences` |</span>
+
+<span class="sd">    returns: DataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">target_region_seq_df</span> <span class="o">=</span> <span class="p">(</span><span class="n">target_regions_df</span>
                             <span class="o">.</span><span class="n">rename</span><span class="p">({</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="s1">&#39;region_id&#39;</span><span class="p">},</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
                             <span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">target_sequences_df</span>
@@ -503,68 +528,68 @@ region: str, second level key in trancript_info eg. three_prime_UTR</p>
   <thead>
     <tr style="text-align: right;">
       <th></th>
-      <th>region_id</th>
-      <th>species</th>
-      <th>Parent</th>
-      <th>strand</th>
-      <th>object_type</th>
-      <th>source</th>
-      <th>end</th>
-      <th>start</th>
-      <th>seq_region_name</th>
       <th>db_type</th>
+      <th>Parent</th>
+      <th>region_id</th>
+      <th>end</th>
+      <th>object_type</th>
       <th>assembly_name</th>
+      <th>species</th>
+      <th>start</th>
+      <th>source</th>
+      <th>seq_region_name</th>
+      <th>strand</th>
       <th>transcript_id</th>
       <th>expanded_start</th>
       <th>expanded_end</th>
       <th>region_pos</th>
-      <th>seq</th>
-      <th>molecule</th>
       <th>region_pos_id</th>
+      <th>molecule</th>
+      <th>seq</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>0</th>
-      <td>ENST00000381577</td>
-      <td>homo_sapiens</td>
-      <td>ENST00000381577</td>
-      <td>1</td>
-      <td>five_prime_UTR</td>
-      <td>ensembl_havana</td>
-      <td>5450596</td>
-      <td>5450542</td>
-      <td>9</td>
       <td>core</td>
+      <td>ENST00000381577</td>
+      <td>ENST00000381577</td>
+      <td>5450596</td>
+      <td>five_prime_UTR</td>
       <td>GRCh38</td>
+      <td>homo_sapiens</td>
+      <td>5450542</td>
+      <td>ensembl_havana</td>
+      <td>9</td>
+      <td>1</td>
       <td>ENST00000381577</td>
       <td>5450512</td>
       <td>5450626</td>
       <td>9:5450512..5450626</td>
-      <td>CTGAGCAGCTGGCGCGTCCCGCGCGGCCCCAGTTCTGCGCAGCTTC...</td>
-      <td>dna</td>
       <td>chromosome:GRCh38:9:5450512:5450626:1</td>
+      <td>dna</td>
+      <td>CTGAGCAGCTGGCGCGTCCCGCGCGGCCCCAGTTCTGCGCAGCTTC...</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>ENST00000381577</td>
-      <td>homo_sapiens</td>
-      <td>ENST00000381577</td>
-      <td>1</td>
-      <td>five_prime_UTR</td>
-      <td>ensembl_havana</td>
-      <td>5456113</td>
-      <td>5456100</td>
-      <td>9</td>
       <td>core</td>
+      <td>ENST00000381577</td>
+      <td>ENST00000381577</td>
+      <td>5456113</td>
+      <td>five_prime_UTR</td>
       <td>GRCh38</td>
+      <td>homo_sapiens</td>
+      <td>5456100</td>
+      <td>ensembl_havana</td>
+      <td>9</td>
+      <td>1</td>
       <td>ENST00000381577</td>
       <td>5456070</td>
       <td>5456143</td>
       <td>9:5456070..5456143</td>
-      <td>CAGTCTTCTTTTCGTGTTTTCCATAATTAGGGCATTCCAGAAAGAT...</td>
-      <td>dna</td>
       <td>chromosome:GRCh38:9:5456070:5456143:1</td>
+      <td>dna</td>
+      <td>CAGTCTTCTTTTCGTGTTTTCCATAATTAGGGCATTCCAGAAAGAT...</td>
     </tr>
   </tbody>
 </table>
@@ -588,16 +613,17 @@ region: str, second level key in trancript_info eg. three_prime_UTR</p>
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">get_transcript_sgrnas</span><span class="p">(</span><span class="n">target_region_seq_df</span><span class="p">,</span> <span class="n">context_len</span><span class="p">,</span> <span class="n">pam_start</span><span class="p">,</span> <span class="n">pam_len</span><span class="p">,</span>
                           <span class="n">sgrna_start</span><span class="p">,</span> <span class="n">sgrna_len</span><span class="p">,</span> <span class="n">pams</span><span class="p">,</span> <span class="n">sg_positions</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Get sgRNAs targetting sequences in a dataframe with region metainformation</span>
+    <span class="sd">&quot;&quot;&quot;Get all sgRNAs targeting transcript regions</span>
 
-<span class="sd">    target_region_seq_df: DataFrame</span>
-<span class="sd">    context_len: int</span>
-<span class="sd">    pam_start: int</span>
-<span class="sd">    pam_len: int</span>
-<span class="sd">    sgrna_start: int</span>
-<span class="sd">    sgrna_len: int</span>
-<span class="sd">    pams: list</span>
-<span class="sd">    sg_positions: list</span>
+<span class="sd">    target_region_seq_df: DataFrame, from `merge_target_region_sequence_df`</span>
+<span class="sd">    context_len: int, length of context sequence |</span>
+<span class="sd">    pam_start: int, position of PAM start relative to the context sequence |</span>
+<span class="sd">    pam_len: int, length of PAM |</span>
+<span class="sd">    sgrna_start: int, position of sgRNA relative to context sequence |</span>
+<span class="sd">    sgrna_len: length of sgRNA sequence |</span>
+<span class="sd">    pams: list or None, PAMs to design against |</span>
+<span class="sd">    sg_positions: list of int, positions within the sgRNA to annotate</span>
+<span class="sd">    (e.g. [4,8] for nucleotides 4 and 8 of the sgRNA) |</span>
 
 <span class="sd">    returns DataFrame</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -672,9 +698,13 @@ region: str, second level key in trancript_info eg. three_prime_UTR</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="filter_sgrnas_by_region" class="doc_header"><code>filter_sgrnas_by_region</code><a href="https://github.com/gpp-rnd/sgrna_designer/tree/master/sgrna_designer/design.py#L119" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>filter_sgrnas_by_region</code>(<strong><code>transcript_sgrna_df</code></strong>, <strong><code>sg_positions</code></strong>)</p>
+<h4 id="filter_sgrnas_by_region" class="doc_header"><code>filter_sgrnas_by_region</code><a href="https://github.com/gpp-rnd/sgrna_designer/tree/master/sgrna_designer/design.py#L150" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>filter_sgrnas_by_region</code>(<strong><code>transcript_sgrna_df</code></strong>, <strong><code>sg_positions</code></strong>)</p>
 </blockquote>
-<p>Filter for sgRNAs such that the sgRNA positions of interest are within the transcript region of interest</p>
+<p>Filter for sgRNAs such that the specified sgRNA positions are within the region of interest</p>
+<p>transcript_sgrna_df: DataFrame, from<code>get_transcript_sgrnas</code>
+sg_positions: list of int, positions within the sgRNA to annotate
+(e.g. [4,8] for nucleotides 4 and 8 of the sgRNA) |</p>
+<p>returns: DataFrame, filtered for sgRNAs that fall within the target region</p>
 
 </div>
 
@@ -722,8 +752,23 @@ region: str, second level key in trancript_info eg. three_prime_UTR</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="design_sgrna_tiling_library" class="doc_header"><code>design_sgrna_tiling_library</code><a href="https://github.com/gpp-rnd/sgrna_designer/tree/master/sgrna_designer/design.py#L134" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>design_sgrna_tiling_library</code>(<strong><code>target_transcripts</code></strong>, <strong><code>region_parent</code></strong>, <strong><code>region</code></strong>, <strong><code>expand_3prime</code></strong>, <strong><code>expand_5prime</code></strong>, <strong><code>context_len</code></strong>, <strong><code>pam_start</code></strong>, <strong><code>pam_len</code></strong>, <strong><code>sgrna_start</code></strong>, <strong><code>sgrna_len</code></strong>, <strong><code>pams</code></strong>, <strong><code>sg_positions</code></strong>)</p>
+<h4 id="design_sgrna_tiling_library" class="doc_header"><code>design_sgrna_tiling_library</code><a href="https://github.com/gpp-rnd/sgrna_designer/tree/master/sgrna_designer/design.py#L171" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>design_sgrna_tiling_library</code>(<strong><code>target_transcripts</code></strong>, <strong><code>region_parent</code></strong>, <strong><code>region</code></strong>, <strong><code>expand_3prime</code></strong>, <strong><code>expand_5prime</code></strong>, <strong><code>context_len</code></strong>, <strong><code>pam_start</code></strong>, <strong><code>pam_len</code></strong>, <strong><code>sgrna_start</code></strong>, <strong><code>sgrna_len</code></strong>, <strong><code>pams</code></strong>, <strong><code>sg_positions</code></strong>)</p>
 </blockquote>
+<p>Design sgRNAs tiling transcript regions</p>
+<p>target_transcripts: list of str
+region_parent: str, first level key in transcript_info eg. UTR |
+region: str, second level key in trancript_info eg. three_prime_UTR |
+expand_3prime: int, length to expand region in 3' direction |
+expand_5prime: int, length to expand region in 5' direction |
+context_len: int, length of context sequence |
+pam_start: int, position of PAM start relative to the context sequence |
+pam_len: int, length of PAM |
+sgrna_start: int, position of sgRNA relative to context sequence |
+sgrna_len: length of sgRNA sequence |
+pams: list or None, PAMs to design against |
+sg_positions: list of int, positions within the sgRNA to annotate
+(e.g. [4,8] for nucleotides 4 and 8 of the sgRNA) |</p>
+<p>returns: DataFrame, sgRNAs for transcript regions of interest</p>
 
 </div>
 

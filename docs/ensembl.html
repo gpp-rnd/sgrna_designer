@@ -149,10 +149,10 @@ params: dict or None, parameters for query |</p>
 <h4 id="get_ensembl_id_information" class="doc_header"><code>get_ensembl_id_information</code><a href="https://github.com/gpp-rnd/sgrna_designer/tree/master/sgrna_designer/ensembl.py#L56" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>get_ensembl_id_information</code>(<strong><code>ensembl_id</code></strong>, <strong><code>expand</code></strong>=<em><code>1</code></em>, <strong><code>utr</code></strong>=<em><code>1</code></em>, <strong>**<code>kwargs</code></strong>)</p>
 </blockquote>
 <p>Get information for an ensembl id (ref. <a href="https://rest.ensembl.org/documentation/info/lookup">https://rest.ensembl.org/documentation/info/lookup</a>)</p>
-<p>ensembl_id: ENSG or ENST
+<p>ensembl_id: ENSG or ENST |
 expand: Expands the search to include any connected features.
-    e.g. If the object is a gene, its transcripts, translations and exons will be returned as well.
-utr: Include 5' and 3' UTR features. Only available if the expand option is used.
+    e.g. If the object is a gene, its transcripts, translations and exons will be returned as well. |
+utr: Include 5' and 3' UTR features. Only available if the expand option is used. |
 kwargs: other parameters for lookup |</p>
 <p>returns: dict</p>
 
@@ -213,9 +213,8 @@ kwargs: other parameters for lookup |</p>
 <p>Request multiple types of sequence by stable identifier. Supports feature masking and expand options.
 Uses <a href="https://rest.ensembl.org/documentation/info/sequence_id">https://rest.ensembl.org/documentation/info/sequence_id</a></p>
 <p>seq_type: str, one of [genomic, cds, cdna, protein] |
-mask_feature: str, If sequence is genomic, mask introns. If sequence is cDNA, mask UTRs. |
 kwargs: additional parameter arguments |</p>
-<p>returns: str, sequence 3' to 5' in the same orientation as the input transcript</p>
+<p>returns: str, sequence 5' to 3' in the same orientation as the input transcript</p>
 
 </div>
 
@@ -270,14 +269,13 @@ kwargs: additional parameter arguments |</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="post_transcript_sequence" class="doc_header"><code>post_transcript_sequence</code><a href="https://github.com/gpp-rnd/sgrna_designer/tree/master/sgrna_designer/ensembl.py#L94" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>post_transcript_sequence</code>(<strong><code>ensembl_ids</code></strong>, <strong><code>seq_type</code></strong>=<em><code>'cdna'</code></em>, <strong><code>mask_feature</code></strong>=<em><code>'1'</code></em>, <strong>**<code>kwargs</code></strong>)</p>
+<h4 id="post_transcript_sequence" class="doc_header"><code>post_transcript_sequence</code><a href="https://github.com/gpp-rnd/sgrna_designer/tree/master/sgrna_designer/ensembl.py#L93" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>post_transcript_sequence</code>(<strong><code>ensembl_ids</code></strong>, <strong><code>seq_type</code></strong>=<em><code>'cdna'</code></em>, <strong>**<code>kwargs</code></strong>)</p>
 </blockquote>
 <p>Request multiple types of sequence by stable identifier. Supports feature masking and expand options.
 Uses <a href="https://rest.ensembl.org/documentation/info/sequence_id">https://rest.ensembl.org/documentation/info/sequence_id</a></p>
 <p>seq_type: str, one of [genomic, cds, cdna, protein] |
-mask_feature: str, If sequence is genomic, mask introns. If sequence is cDNA, mask UTRs. |
 kwargs: additional parameter arguments |</p>
-<p>returns: str, sequence 3' to 5' in the same orientation as the input transcript</p>
+<p>returns: str, sequence 5' to 3' in the same orientation as the input transcript</p>
 
 </div>
 
@@ -303,8 +301,8 @@ kwargs: additional parameter arguments |</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">assert</span><span class="p">(</span><span class="n">post_transcript_sequence</span><span class="p">([</span><span class="s2">&quot;ENSG00000157764&quot;</span><span class="p">,</span> <span class="s2">&quot;ENSG00000248378&quot;</span><span class="p">],</span> <span class="n">seq_type</span><span class="o">=</span><span class="s1">&#39;genomic&#39;</span><span class="p">,</span>
-                                <span class="n">mask_feature</span><span class="o">=</span><span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;seq&#39;</span><span class="p">][:</span><span class="mi">4</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;CTTC&#39;</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">assert</span><span class="p">(</span><span class="n">post_transcript_sequence</span><span class="p">([</span><span class="s2">&quot;ENSG00000157764&quot;</span><span class="p">,</span> <span class="s2">&quot;ENSG00000248378&quot;</span><span class="p">],</span>
+                                <span class="n">seq_type</span><span class="o">=</span><span class="s1">&#39;genomic&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;seq&#39;</span><span class="p">][:</span><span class="mi">4</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;CTTC&#39;</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -332,8 +330,13 @@ kwargs: additional parameter arguments |</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="create_region_str" class="doc_header"><code>create_region_str</code><a href="https://github.com/gpp-rnd/sgrna_designer/tree/master/sgrna_designer/ensembl.py#L114" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>create_region_str</code>(<strong><code>start</code></strong>, <strong><code>end</code></strong>, <strong><code>seq_region</code></strong>)</p>
+<h4 id="create_region_str" class="doc_header"><code>create_region_str</code><a href="https://github.com/gpp-rnd/sgrna_designer/tree/master/sgrna_designer/ensembl.py#L112" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>create_region_str</code>(<strong><code>start</code></strong>, <strong><code>end</code></strong>, <strong><code>seq_region</code></strong>)</p>
 </blockquote>
+<p>Generate string to query a geonomic region of interest</p>
+<p>start: int |
+end: int |
+seq_region: str, chromosome |</p>
+<p>returns: str</p>
 
 </div>
 
@@ -356,7 +359,7 @@ kwargs: additional parameter arguments |</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="get_region_sequence" class="doc_header"><code>get_region_sequence</code><a href="https://github.com/gpp-rnd/sgrna_designer/tree/master/sgrna_designer/ensembl.py#L119" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>get_region_sequence</code>(<strong><code>start</code></strong>, <strong><code>end</code></strong>, <strong><code>seq_region</code></strong>, <strong>**<code>kwargs</code></strong>)</p>
+<h4 id="get_region_sequence" class="doc_header"><code>get_region_sequence</code><a href="https://github.com/gpp-rnd/sgrna_designer/tree/master/sgrna_designer/ensembl.py#L125" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>get_region_sequence</code>(<strong><code>start</code></strong>, <strong><code>end</code></strong>, <strong><code>seq_region</code></strong>, <strong>**<code>kwargs</code></strong>)</p>
 </blockquote>
 <p>Returns the genomic sequence of the specified region of the given species.
 Supports feature masking and expand options.
@@ -419,13 +422,13 @@ kwargs: additional arguments to send to query |</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="post_region_sequences" class="doc_header"><code>post_region_sequences</code><a href="https://github.com/gpp-rnd/sgrna_designer/tree/master/sgrna_designer/ensembl.py#L140" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>post_region_sequences</code>(<strong><code>start</code></strong>, <strong><code>end</code></strong>, <strong><code>seq_region</code></strong>, <strong>**<code>kwargs</code></strong>)</p>
+<h4 id="post_region_sequences" class="doc_header"><code>post_region_sequences</code><a href="https://github.com/gpp-rnd/sgrna_designer/tree/master/sgrna_designer/ensembl.py#L146" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>post_region_sequences</code>(<strong><code>start</code></strong>, <strong><code>end</code></strong>, <strong><code>seq_region</code></strong>, <strong>**<code>kwargs</code></strong>)</p>
 </blockquote>
 <p>Request multiple types of sequence by a list of regions.
 Uses <a href="https://rest.ensembl.org/documentation/info/sequence_region_post">https://rest.ensembl.org/documentation/info/sequence_region_post</a></p>
-<p>start: list, start of each query region. Should align with end and seq_region |
-end: list |
-seq_region: list |
+<p>start: list of int, start of each query region. Should align with end and seq_region |
+end: list of int |
+seq_region: list of str |
 kwargs: optional params for the query |</p>
 <p>returns: list of dict</p>
 
