@@ -2,7 +2,8 @@
 
 __all__ = ['reverse_compliment', 'calculate_global_position', 'traverse_global_position', 'get_sgrna_global_indices',
            'get_trainscript_region_info', 'get_target_regions_df', 'get_target_regions_sequences',
-           'filter_sgrnas_by_region', 'design_sgrna_tiling_library']
+           'merge_target_region_sequence_df', 'get_transcript_sgrnas', 'filter_sgrnas_by_region',
+           'design_sgrna_tiling_library']
 
 # Cell
 import pandas as pd
@@ -147,6 +148,71 @@ def get_target_regions_sequences(target_regions_df):
     return target_sequence_df
 
 # Cell
+def merge_target_region_sequence_df(target_regions_df, target_sequences_df):
+    """Merge target regions and target sequences dataframes
+
+    target_regions_df:  DataFrame, from `get_target_regions_df` |
+    target_sequences_df: DataFrame, from `get_target_regions_sequences` |
+
+    returns: DataFrame
+    """
+    target_region_seq_df = (target_regions_df
+                            .rename({'id': 'region_id'}, axis=1)
+                            .merge(target_sequences_df
+                                   .rename({'query': 'region_pos',
+                                            'id': 'region_pos_id'}, axis=1), how='inner', on='region_pos'))
+    return target_region_seq_df
+
+# Cell
+def get_transcript_sgrnas(target_region_seq_df, context_len, pam_start, pam_len,
+                          sgrna_start, sgrna_len, pams, sg_positions):
+    """Get all sgRNAs targeting transcript regions
+
+    target_region_seq_df: DataFrame, from `merge_target_region_sequence_df`
+    context_len: int, length of context sequence |
+    pam_start: int, position of PAM start relative to the context sequence |
+    pam_len: int, length of PAM |
+    sgrna_start: int, position of sgRNA relative to context sequence |
+    sgrna_len: length of sgRNA sequence |
+    pams: list or None, PAMs to design against |
+    sg_positions: list of int, positions within the sgRNA to annotate
+    (e.g. [4,8] for nucleotides 4 and 8 of the sgRNA) |
+
+    returns DataFrame
+    """
+    sgrna_df_list = []
+    meta_columns = ['object_type', 'strand', 'transcript_id', 'seq_region_name', 'region_id', 'start', 'end']
+    for i, row in target_region_seq_df.iterrows():
+        seq_start = row['expanded_start']
+        seq_end = row['expanded_end']
+        sequence = row['seq']
+        # Sequences on the positive strand
+        pos_sgrna_df = tile.build_sgrna_df(sequence, context_len=context_len, pam_start=pam_start,
+                                           pam_len=pam_len, sgrna_start=sgrna_start,
+                                           sgrna_len=sgrna_len, pams=pams)
+        pos_sgrna_df = get_sgrna_global_indices(pos_sgrna_df, seq_start, seq_end, 1, sg_positions)
+        # assuming the target_region_seq_df is oriented on the positive sgRNA strand
+        pos_sgrna_df['sgrna_strand'] = 1
+        # Sequences on the negative strand
+        rev_comp_seq = reverse_compliment(sequence)
+        neg_sgrna_df = tile.build_sgrna_df(rev_comp_seq, context_len=context_len, pam_start=pam_start,
+                                           pam_len=pam_len, sgrna_start=sgrna_start,
+                                           sgrna_len=sgrna_len, pams=pams)
+        neg_sgrna_df = get_sgrna_global_indices(neg_sgrna_df, seq_start, seq_end, -1, sg_positions)
+        neg_sgrna_df['sgrna_strand'] = -1
+        # Combine and filter sgrna_dfs
+        sgrna_df = pd.concat([pos_sgrna_df, neg_sgrna_df])
+        for col in meta_columns:
+            sgrna_df[col] = row[col]
+        sgrna_df_list.append(sgrna_df)
+    concatenated_sgrna_dfs = (pd.concat(sgrna_df_list)
+                              .rename({'strand': 'transcript_strand',
+                                       'start': 'region_start',
+                                       'end': 'region_end',
+                                       'seq_region_name': 'chromosome'}, axis=1))
+    return concatenated_sgrna_dfs
+
+# Cell
 def filter_sgrnas_by_region(transcript_sgrna_df, sg_positions):
     """Filter for sgRNAs such that the specified sgRNA positions are within the region of interest
 
@@ -164,7 +230,7 @@ def filter_sgrnas_by_region(transcript_sgrna_df, sg_positions):
          (transcript_sgrna_df[global_pos_cols].min(axis=1) <= transcript_sgrna_df['region_end'])) |
         ((transcript_sgrna_df[global_pos_cols].max(axis=1) >= transcript_sgrna_df['region_start']) &
          (transcript_sgrna_df[global_pos_cols].max(axis=1) <= transcript_sgrna_df['region_end']))
-    ].copy()
+    ].reset_index(drop=True)
     return filtered_sgrna_df
 
 # Cell

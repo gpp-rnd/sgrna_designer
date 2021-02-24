@@ -20,6 +20,8 @@ index = {"ensembl_get": "00_ensembl.ipynb",
          "get_trainscript_region_info": "02_design.ipynb",
          "get_target_regions_df": "02_design.ipynb",
          "get_target_regions_sequences": "02_design.ipynb",
+         "merge_target_region_sequence_df": "02_design.ipynb",
+         "get_transcript_sgrnas": "02_design.ipynb",
          "filter_sgrnas_by_region": "02_design.ipynb",
          "design_sgrna_tiling_library": "02_design.ipynb"}
 
