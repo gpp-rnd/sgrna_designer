@@ -118,7 +118,7 @@ def create_region_str(start, end, seq_region):
 
     returns: str
     """
-    region = seq_region + ':' + str(start) + '..' + str(end)
+    region = seq_region + ':' + str(int(start)) + '..' + str(int(end))
     return region
 
 
