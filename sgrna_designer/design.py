@@ -2,7 +2,7 @@
 
 __all__ = ['reverse_compliment', 'calculate_global_position', 'traverse_global_position', 'get_sgrna_global_indices',
            'get_trainscript_region_info', 'get_target_regions_df', 'get_target_regions_sequences',
-           'merge_target_region_sequence_df', 'get_transcript_sgrnas', 'filter_sgrnas_by_region',
+           'merge_target_region_sequence_df', 'get_transcript_sgrnas', 'filter_sgrnas_by_region', 'flag_sgrnas',
            'design_sgrna_tiling_library']
 
 # Cell
@@ -234,10 +234,40 @@ def filter_sgrnas_by_region(transcript_sgrna_df, sg_positions):
     return filtered_sgrna_df
 
 # Cell
+def flag_sgrnas(sgrna_df, flag_seqs, flag_seqs_start, flag_seqs_end):
+    """Flag problematic subsequences (e.g. TTTT) in sgRNAs
+
+    sgrna_df: DataFrame |
+    flag_seqs: list of str, flag subsequences anywhere in sgRNA sequences |
+    flag_seqs_start: list of str, flag subsequences at the beginning of sgRNA sequences |
+    flag_seqs_end: list of str, flag subsequences at the end of sgRNA sequences |
+
+    returns: DataFrame, with additional columns to flag problematic sgRNAs
+    """
+    flagged_df = sgrna_df.copy()
+    flag_cols = []
+    for seq in flag_seqs:
+        flagged_df[seq] = [seq if x else None for x in flagged_df['sgrna_sequence'].str.contains(seq)]
+        flag_cols.append(seq)
+    for seq in flag_seqs_start:
+        seq_str = '(start)' + seq
+        flagged_df[seq_str] = [seq_str if x else None for x in flagged_df['sgrna_sequence'].str.startswith(seq)]
+        flag_cols.append(seq_str)
+    for seq in flag_seqs_end:
+        seq_str = seq + '(end)'
+        flagged_df[seq_str] = [seq_str if x else None for x in flagged_df['sgrna_sequence'].str.endswith(seq)]
+        flag_cols.append(seq_str)
+    flagged_df['flag'] = flagged_df[flag_cols].apply(
+        lambda row: ', '.join([x for x in row if not pd.isna(x)]), axis=1)
+    flagged_df = flagged_df.drop(flag_cols, axis=1)
+    return flagged_df
+
+# Cell
 def design_sgrna_tiling_library(target_transcripts, region_parent, region,
                                 expand_3prime, expand_5prime, context_len,
                                 pam_start, pam_len, sgrna_start, sgrna_len,
-                                pams, sg_positions):
+                                pams, sg_positions, flag_seqs, flag_seqs_start,
+                                flag_seqs_end):
     """Design sgRNAs tiling transcript regions
 
     target_transcripts: list of str
@@ -252,20 +282,22 @@ def design_sgrna_tiling_library(target_transcripts, region_parent, region,
     sgrna_len: length of sgRNA sequence |
     pams: list or None, PAMs to design against |
     sg_positions: list of int, positions within the sgRNA to annotate
-    (e.g. [4,8] for nucleotides 4 and 8 of the sgRNA) |
+        (e.g. [4,8] for nucleotides 4 and 8 of the sgRNA) |
+    flag_seqs: list of str, flag subsequences anywhere in sgRNA sequences |
+    flag_seqs_start: list of str, flag subsequences at the beginning of sgRNA sequences |
+    flag_seqs_end: list of str, flag subsequences at the end of sgRNA sequences |
 
     returns: DataFrame, sgRNAs for transcript regions of interest
     """
-    print('Querying target regions...')
     target_regions_df = get_target_regions_df(target_transcripts=target_transcripts, region_parent=region_parent,
                                               region=region, expand_3prime=expand_3prime,
                                               expand_5prime=expand_5prime)
-    print('Getting target sequences...')
     target_sequences_df = get_target_regions_sequences(target_regions_df)
     target_region_seq_df = merge_target_region_sequence_df(target_regions_df, target_sequences_df)
-    print('Designing sgRNAs...')
     transcript_sgrna_df = get_transcript_sgrnas(target_region_seq_df, context_len=context_len, pam_start=pam_start,
                                                 pam_len=pam_len, sgrna_start=sgrna_start, sgrna_len=sgrna_len,
                                                 pams=pams, sg_positions=sg_positions)
     filtered_sgrnas = filter_sgrnas_by_region(transcript_sgrna_df, sg_positions)
-    return filtered_sgrnas
+    flagged_sgrnas = flag_sgrnas(filtered_sgrnas, flag_seqs=flag_seqs, flag_seqs_start=flag_seqs_start,
+                                 flag_seqs_end=flag_seqs_end)
+    return flagged_sgrnas

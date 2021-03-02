@@ -24,6 +24,7 @@ index = {"ensembl_get": "00_ensembl.ipynb",
          "merge_target_region_sequence_df": "02_design.ipynb",
          "get_transcript_sgrnas": "02_design.ipynb",
          "filter_sgrnas_by_region": "02_design.ipynb",
+         "flag_sgrnas": "02_design.ipynb",
          "design_sgrna_tiling_library": "02_design.ipynb"}
 
 modules = ["ensembl.py",

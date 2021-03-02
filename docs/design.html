@@ -537,10 +537,10 @@ target_sequences_df: DataFrame, from <a href="/sgrna_designer/design.html#get_ta
       <th>Parent</th>
       <th>region_id</th>
       <th>end</th>
-      <th>object_type</th>
       <th>assembly_name</th>
-      <th>species</th>
+      <th>object_type</th>
       <th>start</th>
+      <th>species</th>
       <th>source</th>
       <th>seq_region_name</th>
       <th>strand</th>
@@ -560,10 +560,10 @@ target_sequences_df: DataFrame, from <a href="/sgrna_designer/design.html#get_ta
       <td>ENST00000381577</td>
       <td>ENST00000381577</td>
       <td>5450596</td>
-      <td>five_prime_UTR</td>
       <td>GRCh38</td>
-      <td>homo_sapiens</td>
+      <td>five_prime_UTR</td>
       <td>5450542</td>
+      <td>homo_sapiens</td>
       <td>ensembl_havana</td>
       <td>9</td>
       <td>1</td>
@@ -581,10 +581,10 @@ target_sequences_df: DataFrame, from <a href="/sgrna_designer/design.html#get_ta
       <td>ENST00000381577</td>
       <td>ENST00000381577</td>
       <td>5456113</td>
-      <td>five_prime_UTR</td>
       <td>GRCh38</td>
-      <td>homo_sapiens</td>
+      <td>five_prime_UTR</td>
       <td>5456100</td>
+      <td>homo_sapiens</td>
       <td>ensembl_havana</td>
       <td>9</td>
       <td>1</td>
@@ -736,7 +736,70 @@ sg_positions: list of int, positions within the sgRNA to annotate
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="design_sgrna_tiling_library" class="doc_header"><code>design_sgrna_tiling_library</code><a href="https://github.com/gpp-rnd/sgrna_designer/tree/master/sgrna_designer/design.py#L237" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>design_sgrna_tiling_library</code>(<strong><code>target_transcripts</code></strong>, <strong><code>region_parent</code></strong>, <strong><code>region</code></strong>, <strong><code>expand_3prime</code></strong>, <strong><code>expand_5prime</code></strong>, <strong><code>context_len</code></strong>, <strong><code>pam_start</code></strong>, <strong><code>pam_len</code></strong>, <strong><code>sgrna_start</code></strong>, <strong><code>sgrna_len</code></strong>, <strong><code>pams</code></strong>, <strong><code>sg_positions</code></strong>)</p>
+<h4 id="flag_sgrnas" class="doc_header"><code>flag_sgrnas</code><a href="https://github.com/gpp-rnd/sgrna_designer/tree/master/sgrna_designer/design.py#L237" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>flag_sgrnas</code>(<strong><code>sgrna_df</code></strong>, <strong><code>flag_seqs</code></strong>, <strong><code>flag_seqs_start</code></strong>, <strong><code>flag_seqs_end</code></strong>)</p>
+</blockquote>
+<p>Flag problematic subsequences (e.g. TTTT) in sgRNAs</p>
+<p>sgrna_df: DataFrame |
+flag_seqs: list of str, flag subsequences anywhere in sgRNA sequences |
+flag_seqs_start: list of str, flag subsequences at the beginning of sgRNA sequences |
+flag_seqs_end: list of str, flag subsequences at the end of sgRNA sequences |</p>
+<p>returns: DataFrame, with additional columns to flag problematic sgRNAs</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">problematic_sgrna_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;sgrna_sequence&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;TCTCTTGGAATTGGTGGTGG&#39;</span><span class="p">,</span> <span class="s1">&#39;CCTTACTGAGATCTGGAGAC&#39;</span><span class="p">,</span>
+                                                        <span class="s1">&#39;GGATTTTGAAGGAGACGGAC&#39;</span><span class="p">,</span> <span class="s1">&#39;AGACGGACTGGTGAGAATTT&#39;</span><span class="p">,</span>
+                                                        <span class="s1">&#39;TCTCGCCTCTATTGAGCTGC&#39;</span><span class="p">,</span> <span class="s1">&#39;TCTCCAGATAATTTTTATGG&#39;</span><span class="p">,</span>
+                                                        <span class="s1">&#39;GAGACGGACTGGTGAGAATT&#39;</span><span class="p">,</span> <span class="s1">&#39;TCTCATCTCTTTTCTTTTTG&#39;</span><span class="p">,</span>
+                                                        <span class="s1">&#39;AGAATTGGATCTGGATCATT&#39;</span><span class="p">,</span> <span class="s1">&#39;GGTTCCCAAGGACCTATATG&#39;</span><span class="p">,</span>
+                                                        <span class="s1">&#39;AGATTTTCTACTGCACTTTT&#39;</span><span class="p">,</span> <span class="s1">&#39;ATAATTTTTATGGTGGGACG&#39;</span><span class="p">]})</span>
+
+<span class="n">flagged_sgrnas</span> <span class="o">=</span> <span class="n">flag_sgrnas</span><span class="p">(</span><span class="n">problematic_sgrna_df</span><span class="p">,</span> <span class="n">flag_seqs</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;TTTT&#39;</span><span class="p">,</span> <span class="s1">&#39;CGTCTC&#39;</span><span class="p">,</span> <span class="s1">&#39;GAGACG&#39;</span><span class="p">],</span>
+                             <span class="n">flag_seqs_start</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;TCTC&#39;</span><span class="p">,</span> <span class="s1">&#39;AGACG&#39;</span><span class="p">],</span> <span class="n">flag_seqs_end</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GAGAC&#39;</span><span class="p">])</span>
+<span class="k">assert</span> <span class="p">(</span><span class="n">flagged_sgrnas</span><span class="p">[</span><span class="s1">&#39;flag&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="mi">10</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h4 id="design_sgrna_tiling_library" class="doc_header"><code>design_sgrna_tiling_library</code><a href="https://github.com/gpp-rnd/sgrna_designer/tree/master/sgrna_designer/design.py#L266" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>design_sgrna_tiling_library</code>(<strong><code>target_transcripts</code></strong>, <strong><code>region_parent</code></strong>, <strong><code>region</code></strong>, <strong><code>expand_3prime</code></strong>, <strong><code>expand_5prime</code></strong>, <strong><code>context_len</code></strong>, <strong><code>pam_start</code></strong>, <strong><code>pam_len</code></strong>, <strong><code>sgrna_start</code></strong>, <strong><code>sgrna_len</code></strong>, <strong><code>pams</code></strong>, <strong><code>sg_positions</code></strong>, <strong><code>flag_seqs</code></strong>, <strong><code>flag_seqs_start</code></strong>, <strong><code>flag_seqs_end</code></strong>)</p>
 </blockquote>
 <p>Design sgRNAs tiling transcript regions</p>
 <p>target_transcripts: list of str
@@ -751,7 +814,10 @@ sgrna_start: int, position of sgRNA relative to context sequence |
 sgrna_len: length of sgRNA sequence |
 pams: list or None, PAMs to design against |
 sg_positions: list of int, positions within the sgRNA to annotate
-(e.g. [4,8] for nucleotides 4 and 8 of the sgRNA) |</p>
+    (e.g. [4,8] for nucleotides 4 and 8 of the sgRNA) |
+flag_seqs: list of str, flag subsequences anywhere in sgRNA sequences |
+flag_seqs_start: list of str, flag subsequences at the beginning of sgRNA sequences |
+flag_seqs_end: list of str, flag subsequences at the end of sgRNA sequences |</p>
 <p>returns: DataFrame, sgRNAs for transcript regions of interest</p>
 
 </div>
@@ -782,15 +848,21 @@ sg_positions: list of int, positions within the sgRNA to annotate
 <span class="n">exon_tiling_library</span> <span class="o">=</span> <span class="n">design_sgrna_tiling_library</span><span class="p">(</span><span class="n">target_transcripts</span><span class="p">,</span> <span class="n">region_parent</span><span class="o">=</span><span class="s1">&#39;Exon&#39;</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="s1">&#39;Exon&#39;</span><span class="p">,</span>
                                                   <span class="n">expand_3prime</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">expand_5prime</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">context_len</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
                                                   <span class="n">pam_start</span><span class="o">=-</span><span class="mi">6</span><span class="p">,</span> <span class="n">pam_len</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">sgrna_start</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">sgrna_len</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
-                                                  <span class="n">pams</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;AGG&#39;</span><span class="p">,</span> <span class="s1">&#39;CGG&#39;</span><span class="p">,</span> <span class="s1">&#39;TGG&#39;</span><span class="p">,</span> <span class="s1">&#39;GGG&#39;</span><span class="p">],</span> <span class="n">sg_positions</span><span class="o">=</span><span class="p">[</span><span class="mi">17</span><span class="p">,</span> <span class="mi">18</span><span class="p">])</span>
+                                                  <span class="n">pams</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;AGG&#39;</span><span class="p">,</span> <span class="s1">&#39;CGG&#39;</span><span class="p">,</span> <span class="s1">&#39;TGG&#39;</span><span class="p">,</span> <span class="s1">&#39;GGG&#39;</span><span class="p">],</span> <span class="n">sg_positions</span><span class="o">=</span><span class="p">[</span><span class="mi">17</span><span class="p">,</span> <span class="mi">18</span><span class="p">],</span>
+                                                  <span class="n">flag_seqs</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;TTTT&#39;</span><span class="p">,</span> <span class="s1">&#39;CGTCTC&#39;</span><span class="p">,</span> <span class="s1">&#39;GAGACG&#39;</span><span class="p">],</span>
+                                                  <span class="n">flag_seqs_start</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;TCTC&#39;</span><span class="p">,</span> <span class="s1">&#39;AGACG&#39;</span><span class="p">],</span> <span class="n">flag_seqs_end</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GAGAC&#39;</span><span class="p">])</span>
 <span class="n">utr3_tiling_library</span> <span class="o">=</span> <span class="n">design_sgrna_tiling_library</span><span class="p">(</span><span class="n">target_transcripts</span><span class="p">,</span> <span class="n">region_parent</span><span class="o">=</span><span class="s1">&#39;UTR&#39;</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="s1">&#39;three_prime_UTR&#39;</span><span class="p">,</span>
                                                   <span class="n">expand_3prime</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">expand_5prime</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">context_len</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
                                                   <span class="n">pam_start</span><span class="o">=-</span><span class="mi">6</span><span class="p">,</span> <span class="n">pam_len</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">sgrna_start</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">sgrna_len</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
-                                                  <span class="n">pams</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;AGG&#39;</span><span class="p">,</span> <span class="s1">&#39;CGG&#39;</span><span class="p">,</span> <span class="s1">&#39;TGG&#39;</span><span class="p">,</span> <span class="s1">&#39;GGG&#39;</span><span class="p">],</span> <span class="n">sg_positions</span><span class="o">=</span><span class="p">[</span><span class="mi">17</span><span class="p">,</span> <span class="mi">18</span><span class="p">])</span>
+                                                  <span class="n">pams</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;AGG&#39;</span><span class="p">,</span> <span class="s1">&#39;CGG&#39;</span><span class="p">,</span> <span class="s1">&#39;TGG&#39;</span><span class="p">,</span> <span class="s1">&#39;GGG&#39;</span><span class="p">],</span> <span class="n">sg_positions</span><span class="o">=</span><span class="p">[</span><span class="mi">17</span><span class="p">,</span> <span class="mi">18</span><span class="p">],</span>
+                                                  <span class="n">flag_seqs</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;TTTT&#39;</span><span class="p">,</span> <span class="s1">&#39;CGTCTC&#39;</span><span class="p">,</span> <span class="s1">&#39;GAGACG&#39;</span><span class="p">],</span>
+                                                  <span class="n">flag_seqs_start</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;TCTC&#39;</span><span class="p">,</span> <span class="s1">&#39;AGACG&#39;</span><span class="p">],</span> <span class="n">flag_seqs_end</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GAGAC&#39;</span><span class="p">])</span>
 <span class="n">utr5_tiling_library</span> <span class="o">=</span> <span class="n">design_sgrna_tiling_library</span><span class="p">(</span><span class="n">target_transcripts</span><span class="p">,</span> <span class="n">region_parent</span><span class="o">=</span><span class="s1">&#39;UTR&#39;</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="s1">&#39;five_prime_UTR&#39;</span><span class="p">,</span>
                                                   <span class="n">expand_3prime</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">expand_5prime</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">context_len</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
                                                   <span class="n">pam_start</span><span class="o">=-</span><span class="mi">6</span><span class="p">,</span> <span class="n">pam_len</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">sgrna_start</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">sgrna_len</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
-                                                  <span class="n">pams</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;AGG&#39;</span><span class="p">,</span> <span class="s1">&#39;CGG&#39;</span><span class="p">,</span> <span class="s1">&#39;TGG&#39;</span><span class="p">,</span> <span class="s1">&#39;GGG&#39;</span><span class="p">],</span> <span class="n">sg_positions</span><span class="o">=</span><span class="p">[</span><span class="mi">17</span><span class="p">,</span> <span class="mi">18</span><span class="p">])</span>
+                                                  <span class="n">pams</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;AGG&#39;</span><span class="p">,</span> <span class="s1">&#39;CGG&#39;</span><span class="p">,</span> <span class="s1">&#39;TGG&#39;</span><span class="p">,</span> <span class="s1">&#39;GGG&#39;</span><span class="p">],</span> <span class="n">sg_positions</span><span class="o">=</span><span class="p">[</span><span class="mi">17</span><span class="p">,</span> <span class="mi">18</span><span class="p">],</span>
+                                                  <span class="n">flag_seqs</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;TTTT&#39;</span><span class="p">,</span> <span class="s1">&#39;CGTCTC&#39;</span><span class="p">,</span> <span class="s1">&#39;GAGACG&#39;</span><span class="p">],</span>
+                                                  <span class="n">flag_seqs_start</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;TCTC&#39;</span><span class="p">,</span> <span class="s1">&#39;AGACG&#39;</span><span class="p">],</span> <span class="n">flag_seqs_end</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GAGAC&#39;</span><span class="p">])</span>
 <span class="c1"># This is an approximation, as some guides are actually at the UTR/CDS border</span>
 <span class="n">cds_tiling_library</span> <span class="o">=</span> <span class="n">exon_tiling_library</span><span class="p">[</span><span class="o">~</span><span class="n">exon_tiling_library</span><span class="p">[</span><span class="s1">&#39;sgrna_sequence&#39;</span><span class="p">]</span>
                                          <span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">utr3_tiling_library</span><span class="p">[</span><span class="s1">&#39;sgrna_sequence&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span> <span class="o">+</span>
@@ -844,11 +916,12 @@ sg_positions: list of int, positions within the sgRNA to annotate
       <th>region_id</th>
       <th>region_start</th>
       <th>region_end</th>
+      <th>flag</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <th>3</th>
+      <th>15</th>
       <td>GCTGTCTTTATATTCATGACCTACTGGCAT</td>
       <td>TGG</td>
       <td>TCTTTATATTCATGACCTAC</td>
@@ -863,9 +936,10 @@ sg_positions: list of int, positions within the sgRNA to annotate
       <td>ENSE00000813155</td>
       <td>5456100</td>
       <td>5456165</td>
+      <td></td>
     </tr>
     <tr>
-      <th>4</th>
+      <th>16</th>
       <td>CATGACCTACTGGCATTTGCTGAACGGTAA</td>
       <td>CGG</td>
       <td>ACCTACTGGCATTTGCTGAA</td>
@@ -880,9 +954,10 @@ sg_positions: list of int, positions within the sgRNA to annotate
       <td>ENSE00000813155</td>
       <td>5456100</td>
       <td>5456165</td>
+      <td></td>
     </tr>
     <tr>
-      <th>0</th>
+      <th>17</th>
       <td>TCTTACCGTTCAGCAAATGCCAGTAGGTCA</td>
       <td>AGG</td>
       <td>ACCGTTCAGCAAATGCCAGT</td>
@@ -897,9 +972,10 @@ sg_positions: list of int, positions within the sgRNA to annotate
       <td>ENSE00000813155</td>
       <td>5456100</td>
       <td>5456165</td>
+      <td></td>
     </tr>
     <tr>
-      <th>0</th>
+      <th>19</th>
       <td>CTTTCTTTTTAGCATTTACTGTCACGGTTC</td>
       <td>CGG</td>
       <td>CTTTTTAGCATTTACTGTCA</td>
@@ -914,9 +990,10 @@ sg_positions: list of int, positions within the sgRNA to annotate
       <td>ENSE00003541119</td>
       <td>5457079</td>
       <td>5457420</td>
+      <td>TTTT</td>
     </tr>
     <tr>
-      <th>1</th>
+      <th>20</th>
       <td>TAGCATTTACTGTCACGGTTCCCAAGGACC</td>
       <td>AGG</td>
       <td>ATTTACTGTCACGGTTCCCA</td>
@@ -931,6 +1008,7 @@ sg_positions: list of int, positions within the sgRNA to annotate
       <td>ENSE00003541119</td>
       <td>5457079</td>
       <td>5457420</td>
+      <td></td>
     </tr>
     <tr>
       <th>...</th>
@@ -948,9 +1026,10 @@ sg_positions: list of int, positions within the sgRNA to annotate
       <td>...</td>
       <td>...</td>
       <td>...</td>
+      <td>...</td>
     </tr>
     <tr>
-      <th>7</th>
+      <th>743</th>
       <td>TCTCCAAAAACACCCATCCAGGCAGGGGGA</td>
       <td>GGG</td>
       <td>CAAAAACACCCATCCAGGCA</td>
@@ -965,9 +1044,10 @@ sg_positions: list of int, positions within the sgRNA to annotate
       <td>ENSE00001907699</td>
       <td>140734617</td>
       <td>140734770</td>
+      <td></td>
     </tr>
     <tr>
-      <th>8</th>
+      <th>744</th>
       <td>CTCCAAAAACACCCATCCAGGCAGGGGGAT</td>
       <td>GGG</td>
       <td>AAAAACACCCATCCAGGCAG</td>
@@ -982,9 +1062,10 @@ sg_positions: list of int, positions within the sgRNA to annotate
       <td>ENSE00001907699</td>
       <td>140734617</td>
       <td>140734770</td>
+      <td></td>
     </tr>
     <tr>
-      <th>9</th>
+      <th>745</th>
       <td>TCCAAAAACACCCATCCAGGCAGGGGGATA</td>
       <td>GGG</td>
       <td>AAAACACCCATCCAGGCAGG</td>
@@ -999,9 +1080,10 @@ sg_positions: list of int, positions within the sgRNA to annotate
       <td>ENSE00001907699</td>
       <td>140734617</td>
       <td>140734770</td>
+      <td></td>
     </tr>
     <tr>
-      <th>10</th>
+      <th>746</th>
       <td>AACACCCATCCAGGCAGGGGGATATGGTGC</td>
       <td>TGG</td>
       <td>CCCATCCAGGCAGGGGGATA</td>
@@ -1016,9 +1098,10 @@ sg_positions: list of int, positions within the sgRNA to annotate
       <td>ENSE00001907699</td>
       <td>140734617</td>
       <td>140734770</td>
+      <td></td>
     </tr>
     <tr>
-      <th>281</th>
+      <th>1028</th>
       <td>GCTGCCATGATGGTGGCTACTTGAAGGCTG</td>
       <td>AGG</td>
       <td>CCATGATGGTGGCTACTTGA</td>
@@ -1033,10 +1116,11 @@ sg_positions: list of int, positions within the sgRNA to annotate
       <td>ENSE00003819130</td>
       <td>140719337</td>
       <td>140726516</td>
+      <td></td>
     </tr>
   </tbody>
 </table>
-<p>401 rows × 14 columns</p>
+<p>401 rows × 15 columns</p>
 </div>
 </div>
 
