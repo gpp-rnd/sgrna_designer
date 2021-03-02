@@ -269,13 +269,43 @@ kwargs: additional parameter arguments |</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="post_transcript_sequence" class="doc_header"><code>post_transcript_sequence</code><a href="https://github.com/gpp-rnd/sgrna_designer/tree/master/sgrna_designer/ensembl.py#L93" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>post_transcript_sequence</code>(<strong><code>ensembl_ids</code></strong>, <strong><code>seq_type</code></strong>=<em><code>'cdna'</code></em>, <strong>**<code>kwargs</code></strong>)</p>
+<h4 id="chunks" class="doc_header"><code>chunks</code><a href="https://github.com/gpp-rnd/sgrna_designer/tree/master/sgrna_designer/ensembl.py#L93" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>chunks</code>(<strong><code>lst</code></strong>, <strong><code>n</code></strong>)</p>
+</blockquote>
+<p>Yield successive n-sized chunks from lst.</p>
+<p>lst: list
+n: int</p>
+<p>returns: generator of list chunks</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h4 id="post_transcript_sequence" class="doc_header"><code>post_transcript_sequence</code><a href="https://github.com/gpp-rnd/sgrna_designer/tree/master/sgrna_designer/ensembl.py#L105" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>post_transcript_sequence</code>(<strong><code>ensembl_ids</code></strong>, <strong><code>seq_type</code></strong>=<em><code>'cdna'</code></em>, <strong><code>max_queries</code></strong>=<em><code>50</code></em>, <strong>**<code>kwargs</code></strong>)</p>
 </blockquote>
 <p>Request multiple types of sequence by stable identifier. Supports feature masking and expand options.
-Uses <a href="https://rest.ensembl.org/documentation/info/sequence_id">https://rest.ensembl.org/documentation/info/sequence_id</a></p>
-<p>seq_type: str, one of [genomic, cds, cdna, protein] |
+Uses <a href="https://rest.ensembl.org/documentation/info/sequence_id_post">https://rest.ensembl.org/documentation/info/sequence_id_post</a></p>
+<p>ensembl_ids: list of str |
+seq_type: str, one of [genomic, cds, cdna, protein] |
+max_queries: int, maximum number of queries for post |
 kwargs: additional parameter arguments |</p>
-<p>returns: str, sequence 5' to 3' in the same orientation as the input transcript</p>
+<p>returns: list, dict of sequences 5' to 3' in the same orientation as the input transcript</p>
 
 </div>
 
@@ -312,6 +342,31 @@ kwargs: additional parameter arguments |</p>
 </div>
     {% endraw %}
 
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+
+<span class="n">exmaple_transcripts</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_table</span><span class="p">(</span><span class="s1">&#39;data/essential_transcripts.txt&#39;</span><span class="p">)</span>
+<span class="n">example_transcripts_ids</span> <span class="o">=</span> <span class="p">(</span><span class="n">exmaple_transcripts</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">70</span><span class="p">)[</span><span class="s1">&#39;Target Transcript&#39;</span><span class="p">]</span>
+                           <span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">to_list</span><span class="p">())</span>
+
+<span class="n">transcript_sequences</span> <span class="o">=</span> <span class="n">post_transcript_sequence</span><span class="p">(</span><span class="n">example_transcripts_ids</span><span class="p">,</span> <span class="n">seq_type</span><span class="o">=</span><span class="s1">&#39;cds&#39;</span><span class="p">)</span>
+<span class="k">assert</span><span class="p">(</span><span class="n">transcript_sequences</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;seq&#39;</span><span class="p">][:</span><span class="mi">12</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;ATGCTGTCCGTG&#39;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Get-Sequence-by-region">Get Sequence by region<a class="anchor-link" href="#Get-Sequence-by-region"> </a></h2><p>Note that <a href="/sgrna_designer/ensembl.html#get_region_sequence"><code>get_region_sequence</code></a> returns sequences 5' to 3' on the positive DNA strand</p>
@@ -330,7 +385,7 @@ kwargs: additional parameter arguments |</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="create_region_str" class="doc_header"><code>create_region_str</code><a href="https://github.com/gpp-rnd/sgrna_designer/tree/master/sgrna_designer/ensembl.py#L112" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>create_region_str</code>(<strong><code>start</code></strong>, <strong><code>end</code></strong>, <strong><code>seq_region</code></strong>)</p>
+<h4 id="create_region_str" class="doc_header"><code>create_region_str</code><a href="https://github.com/gpp-rnd/sgrna_designer/tree/master/sgrna_designer/ensembl.py#L129" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>create_region_str</code>(<strong><code>start</code></strong>, <strong><code>end</code></strong>, <strong><code>seq_region</code></strong>)</p>
 </blockquote>
 <p>Generate string to query a geonomic region of interest</p>
 <p>start: int |
@@ -359,7 +414,7 @@ seq_region: str, chromosome |</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="get_region_sequence" class="doc_header"><code>get_region_sequence</code><a href="https://github.com/gpp-rnd/sgrna_designer/tree/master/sgrna_designer/ensembl.py#L125" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>get_region_sequence</code>(<strong><code>start</code></strong>, <strong><code>end</code></strong>, <strong><code>seq_region</code></strong>, <strong>**<code>kwargs</code></strong>)</p>
+<h4 id="get_region_sequence" class="doc_header"><code>get_region_sequence</code><a href="https://github.com/gpp-rnd/sgrna_designer/tree/master/sgrna_designer/ensembl.py#L142" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>get_region_sequence</code>(<strong><code>start</code></strong>, <strong><code>end</code></strong>, <strong><code>seq_region</code></strong>, <strong>**<code>kwargs</code></strong>)</p>
 </blockquote>
 <p>Returns the genomic sequence of the specified region of the given species.
 Supports feature masking and expand options.
@@ -422,13 +477,14 @@ kwargs: additional arguments to send to query |</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="post_region_sequences" class="doc_header"><code>post_region_sequences</code><a href="https://github.com/gpp-rnd/sgrna_designer/tree/master/sgrna_designer/ensembl.py#L146" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>post_region_sequences</code>(<strong><code>start</code></strong>, <strong><code>end</code></strong>, <strong><code>seq_region</code></strong>, <strong>**<code>kwargs</code></strong>)</p>
+<h4 id="post_region_sequences" class="doc_header"><code>post_region_sequences</code><a href="https://github.com/gpp-rnd/sgrna_designer/tree/master/sgrna_designer/ensembl.py#L163" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>post_region_sequences</code>(<strong><code>start</code></strong>, <strong><code>end</code></strong>, <strong><code>seq_region</code></strong>, <strong><code>max_queries</code></strong>=<em><code>50</code></em>, <strong>**<code>kwargs</code></strong>)</p>
 </blockquote>
 <p>Request multiple types of sequence by a list of regions.
 Uses <a href="https://rest.ensembl.org/documentation/info/sequence_region_post">https://rest.ensembl.org/documentation/info/sequence_region_post</a></p>
 <p>start: list of int, start of each query region. Should align with end and seq_region |
 end: list of int |
 seq_region: list of str |
+max_queries: int, maximum number of queries for post |
 kwargs: optional params for the query |</p>
 <p>returns: list of dict</p>
 
@@ -459,6 +515,27 @@ kwargs: optional params for the query |</p>
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">assert</span> <span class="p">(</span><span class="n">post_region_sequences</span><span class="p">([</span><span class="mi">1000000</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1000100</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span>
                               <span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;ABBA01004489.1&#39;</span><span class="p">])[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;seq&#39;</span><span class="p">]</span> <span class="o">==</span>
         <span class="s1">&#39;CTGTAGAAACATTAGCCTGGCTAACAAGGTGAAACCCCATCTCTACTAACAATACAAAATATTGGTTGGGCGTGGTGGCGGGTGCTTGTAATCCCAGCTAC&#39;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">start_pos</span> <span class="o">=</span> <span class="mi">100000</span>
+<span class="n">start_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">start_pos</span><span class="p">,</span> <span class="n">start_pos</span> <span class="o">+</span> <span class="mi">70</span><span class="p">))</span>
+<span class="n">end_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">start_pos</span> <span class="o">+</span> <span class="mi">100</span><span class="p">,</span> <span class="n">start_pos</span> <span class="o">+</span> <span class="mi">170</span><span class="p">))</span>
+<span class="n">big_post_sequences</span> <span class="o">=</span> <span class="n">post_region_sequences</span><span class="p">(</span><span class="n">start_list</span><span class="p">,</span> <span class="n">end_list</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">start_list</span><span class="p">))</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">big_post_sequences</span><span class="p">)</span> <span class="o">==</span> <span class="mi">70</span>
 </pre></div>
 
     </div>
