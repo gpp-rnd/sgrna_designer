@@ -44,7 +44,8 @@ sgrna_designs = design_sgrna_tiling_library(target_transcripts, region_parent='U
                                             expand_5prime=30, context_len=30, pam_start=-6,
                                             pam_len=3, sgrna_start=4, sgrna_len=20,
                                             pams=['AGG', 'CGG', 'TGG', 'GGG'],
-                                            sg_positions=[4, 8])
+                                            sg_positions=[4, 8], flag_seqs=['TTTT', 'CGTCTC', 'GAGACG'],
+                                            flag_seqs_start=['TCTC', 'AGACG'], flag_seqs_end=['GAGAC'])
 sgrna_designs
 ```
 
