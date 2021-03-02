@@ -256,11 +256,14 @@ def design_sgrna_tiling_library(target_transcripts, region_parent, region,
 
     returns: DataFrame, sgRNAs for transcript regions of interest
     """
+    print('Querying target regions...')
     target_regions_df = get_target_regions_df(target_transcripts=target_transcripts, region_parent=region_parent,
                                               region=region, expand_3prime=expand_3prime,
                                               expand_5prime=expand_5prime)
+    print('Getting target sequences...')
     target_sequences_df = get_target_regions_sequences(target_regions_df)
     target_region_seq_df = merge_target_region_sequence_df(target_regions_df, target_sequences_df)
+    print('Designing sgRNAs...')
     transcript_sgrna_df = get_transcript_sgrnas(target_region_seq_df, context_len=context_len, pam_start=pam_start,
                                                 pam_len=pam_len, sgrna_start=sgrna_start, sgrna_len=sgrna_len,
                                                 pams=pams, sg_positions=sg_positions)
