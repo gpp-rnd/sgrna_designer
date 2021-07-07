@@ -414,7 +414,7 @@ seq_region: str, chromosome |</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="get_region_sequence" class="doc_header"><code>get_region_sequence</code><a href="https://github.com/gpp-rnd/sgrna_designer/tree/master/sgrna_designer/ensembl.py#L142" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>get_region_sequence</code>(<strong><code>start</code></strong>, <strong><code>end</code></strong>, <strong><code>seq_region</code></strong>, <strong>**<code>kwargs</code></strong>)</p>
+<h4 id="get_region_sequence" class="doc_header"><code>get_region_sequence</code><a href="https://github.com/gpp-rnd/sgrna_designer/tree/master/sgrna_designer/ensembl.py#L142" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>get_region_sequence</code>(<strong><code>start</code></strong>, <strong><code>end</code></strong>, <strong><code>seq_region</code></strong>, <strong><code>species</code></strong>=<em><code>'human'</code></em>, <strong>**<code>kwargs</code></strong>)</p>
 </blockquote>
 <p>Returns the genomic sequence of the specified region of the given species.
 Supports feature masking and expand options.
@@ -477,7 +477,7 @@ kwargs: additional arguments to send to query |</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="post_region_sequences" class="doc_header"><code>post_region_sequences</code><a href="https://github.com/gpp-rnd/sgrna_designer/tree/master/sgrna_designer/ensembl.py#L163" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>post_region_sequences</code>(<strong><code>start</code></strong>, <strong><code>end</code></strong>, <strong><code>seq_region</code></strong>, <strong><code>max_queries</code></strong>=<em><code>50</code></em>, <strong>**<code>kwargs</code></strong>)</p>
+<h4 id="post_region_sequences" class="doc_header"><code>post_region_sequences</code><a href="https://github.com/gpp-rnd/sgrna_designer/tree/master/sgrna_designer/ensembl.py#L163" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>post_region_sequences</code>(<strong><code>start</code></strong>, <strong><code>end</code></strong>, <strong><code>seq_region</code></strong>, <strong><code>max_queries</code></strong>=<em><code>50</code></em>, <strong><code>species</code></strong>=<em><code>'human'</code></em>, <strong>**<code>kwargs</code></strong>)</p>
 </blockquote>
 <p>Request multiple types of sequence by a list of regions.
 Uses <a href="https://rest.ensembl.org/documentation/info/sequence_region_post">https://rest.ensembl.org/documentation/info/sequence_region_post</a></p>

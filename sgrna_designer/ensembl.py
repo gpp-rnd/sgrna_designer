@@ -139,7 +139,7 @@ def create_region_str(start, end, seq_region):
     return region
 
 
-def get_region_sequence(start, end, seq_region, **kwargs):
+def get_region_sequence(start, end, seq_region, species='human', **kwargs):
     """Returns the genomic sequence of the specified region of the given species.
     Supports feature masking and expand options.
     Uses https://rest.ensembl.org/documentation/info/sequence_region
@@ -154,13 +154,14 @@ def get_region_sequence(start, end, seq_region, **kwargs):
     region = create_region_str(start, end, seq_region)
     headers = {'content-type': 'text/plain'}
     params = {**kwargs}
-    r = ensembl_get('/sequence/region/human/', query=region, headers=headers,
+    r = ensembl_get('/sequence/region/' + species + '/', query=region, headers=headers,
                     params=params)
     sequence = r.text
     return sequence
 
 # Cell
-def post_region_sequences(start, end, seq_region, max_queries=50, **kwargs):
+def post_region_sequences(start, end, seq_region, max_queries=50,
+                          species='human', **kwargs):
     """Request multiple types of sequence by a list of regions.
     Uses https://rest.ensembl.org/documentation/info/sequence_region_post
 
@@ -176,7 +177,7 @@ def post_region_sequences(start, end, seq_region, max_queries=50, **kwargs):
     for s, e, r in zip(start, end, seq_region):
         region_str = create_region_str(s, e, r)
         regions.append(region_str)
-    ext = "/sequence/region/human"
+    ext = "/sequence/region/" + species
     headers={"content-type" : "application/json", "accept" : "application/json"}
     params = {**kwargs}
     region_chunks = chunks(regions, max_queries)
